@@ -60,6 +60,7 @@ class UserController {
                     email
                 })
                 user.password = null;
+                console.log('token', process.env.JWT_COOKIE)
                 response.cookie(
                     process.env.JWT_COOKIE,
                     token, {
