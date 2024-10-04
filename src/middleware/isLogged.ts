@@ -7,14 +7,15 @@ import { logger } from '../utils/wintons';
 
 const isLogged = async (req: RequestModel, res: Response, next) => {
   try {
-    let { token } = req.cookies
+    let token = req?.cookies?.token || req.headers.bearer
 
     if (!token) {
-      token = req.query.token
+      throw 'Token not provided';
     }
-    const teste = decodeToken(token)
+
+    const decodedToken = decodeToken(token)
     const { email } = decodeToken(token)
-    console.log('middleware is logged teste: ', teste)
+    console.log('middleware is logged teste: ', decodedToken)
     if (email) {
       const settingsRepository = getCustomRepository(UserRepository);
       const user = await settingsRepository.findOne({ where: { email } })
@@ -26,8 +27,8 @@ const isLogged = async (req: RequestModel, res: Response, next) => {
       }
     }
 
-
     throw 'Invalid token'
+
   } catch (error) {
     logger.error(error)
     res.status(401)

@@ -67,7 +67,7 @@ class UserController {
                     httpOnly: true,
                     maxAge: parseInt(process.env.JWT_EXPIRES_IN, 10) * 1000
                 }
-                ).send(user)
+                ).send({...user, token})
 
                 return
             }

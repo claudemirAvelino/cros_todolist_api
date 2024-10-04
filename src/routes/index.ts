@@ -15,6 +15,6 @@ routes.get('/api-docs', (req: Request, res: Response) => {
     res.send(swaggerSpec);
 });
 
-routes.use('/api/task', isLogged, task);
+routes.use('/task', isLogged, task);
 
 export { routes }

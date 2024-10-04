@@ -4,10 +4,10 @@ import { TaskRepository } from '../repositories/TaskRepository';
 import { UserRepository } from '../repositories/UserRepository';
 import { TaskStatus } from '../enums/TaskStatus';
 import { logger } from '../utils/wintons';
-import {RequestModel} from "../middleware/RequestModel";
+import {RequestModel, RequestTaskModel} from "../middleware/RequestModel";
 
 class TaskController {
-    async create(request: RequestModel, response: Response) {
+    async create(request: RequestTaskModel, response: Response) {
         try {
             const { title, description, parentTaskId } = request.body;
             const userId = request.auth.id; // Assuming user ID is available in request.auth
