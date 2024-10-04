@@ -14,14 +14,15 @@ class UserController {
 
     async create(request: RequestModel, response: Response) {
         try {
-            const { email, password } = request.body;
+            const { email, password, name } = request.body;
             const userRepository = getCustomRepository(UserRepository)
             const user = userRepository.create({
                 email,
-                password
+                password,
+                name
             })
             await userRepository.save(user);
-
+            delete user.password;
             return response.json(user)
 
         } catch (error) {

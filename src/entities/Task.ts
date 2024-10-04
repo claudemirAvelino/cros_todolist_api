@@ -3,11 +3,9 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
-    BeforeInsert,
     ManyToOne,
     OneToMany, PrimaryGeneratedColumn
 } from 'typeorm';
-import { v4 as uuid } from 'uuid';
 import { User } from './User';
 import { TaskStatus } from '../enums/TaskStatus';
 
@@ -16,7 +14,7 @@ class Task {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
+    @Column({ nullable: false })
     title: string;
 
     @Column({ nullable: true })
