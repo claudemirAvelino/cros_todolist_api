@@ -6,7 +6,7 @@ import {
     PrimaryColumn,
     BeforeInsert,
     BeforeUpdate,
-    OneToMany
+    OneToMany, PrimaryGeneratedColumn
 } from 'typeorm'
 import { v4 as uuid } from 'uuid';
 import { hashPassword } from '../utils/crypto'
@@ -14,13 +14,13 @@ import {Task} from "./Task";
 
 @Entity('users')
 class User {
-    @PrimaryColumn('uuid')
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column()
-    nome: string;
+    name: string;
 
-    @Column()
+    @Column({ unique: true })
     email: string;
 
     @Column()
@@ -35,10 +35,6 @@ class User {
     @UpdateDateColumn()
     updated_at: Date;
 
-    @BeforeInsert()
-    setId() {
-        this.id = uuid();
-    }
     @BeforeInsert()
     @BeforeUpdate()
     async setPassword() {

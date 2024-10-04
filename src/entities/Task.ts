@@ -1,13 +1,11 @@
-// src/entities/Task.ts
 import {
     Entity,
     Column,
     CreateDateColumn,
     UpdateDateColumn,
-    PrimaryColumn,
     BeforeInsert,
     ManyToOne,
-    OneToMany
+    OneToMany, PrimaryGeneratedColumn
 } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 import { User } from './User';
@@ -15,14 +13,14 @@ import { TaskStatus } from '../enums/TaskStatus';
 
 @Entity('tasks')
 class Task {
-    @PrimaryColumn('uuid')
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column()
     title: string;
 
     @Column({ nullable: true })
-    description?: string;
+    description: string;
 
     @Column({
         type: 'enum',
@@ -45,11 +43,6 @@ class Task {
 
     @UpdateDateColumn()
     updated_at: Date;
-
-    @BeforeInsert()
-    setId() {
-        this.id = uuid();
-    }
 }
 
 export { Task };

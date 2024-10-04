@@ -1,0 +1,101 @@
+{
+    "Task": {
+        "properties": {
+            "id": {
+                "type": "string",
+                "example": "0874db54-4d61-49c8-a843-4cad584655be"
+            },
+            "title": {
+                "type": "string",
+                "example": "Task Title"
+            },
+            "description": {
+                "type": "string",
+                "example": "Task Description"
+            },
+            "status": {
+                "type": "string",
+                "example": "pending",
+                "description": "Task Status"
+            },
+            "user": {
+                "$ref": "#/definitions/User",
+                "description": "User assigned to the task"
+            },
+            "parentTask": {
+                "$ref": "#/definitions/Task",
+                "description": "Parent task (if this task is a subtask)"
+            },
+            "subtasks": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/Task"
+                },
+                "description": "Subtasks of this task"
+            }
+        }
+    },
+    "TaskCreate": {
+        "required": [
+            "title",
+            "status",
+            "userId"
+        ],
+        "properties": {
+            "title": {
+                "type": "string",
+                "example": "Task Title",
+                "description": "Task's title"
+            },
+            "description": {
+                "type": "string",
+                "example": "Task Description",
+                "description": "Task's description"
+            },
+            "status": {
+                "type": "string",
+                "example": "pending",
+                "description": "Task's status"
+            },
+            "userId": {
+                "type": "string",
+                "example": "0874db54-4d61-49c8-a843-4cad584655be",
+                "description": "User ID of the user assigned to the task"
+            },
+            "parentTaskId": {
+                "type": "string",
+                "example": "0874db54-4d61-49c8-a843-4cad584655be",
+                "description": "ID of the parent task (if this task is a subtask)"
+            }
+        }
+    },
+    "TaskUpdate": {
+        "properties": {
+            "title": {
+                "type": "string",
+                "example": "Task Title",
+                "description": "Task's title"
+            },
+            "description": {
+                "type": "string",
+                "example": "Task Description",
+                "description": "Task's description"
+            },
+            "status": {
+                "type": "string",
+                "example": "pending",
+                "description": "Task's status"
+            },
+            "userId": {
+                "type": "string",
+                "example": "0874db54-4d61-49c8-a843-4cad584655be",
+                "description": "User ID of the user assigned to the task"
+            },
+            "parentTaskId": {
+                "type": "string",
+                "example": "0874db54-4d61-49c8-a843-4cad584655be",
+                "description": "ID of the parent task (if this task is a subtask)"
+            }
+        }
+    }
+}
