@@ -53,9 +53,10 @@ cp .env.example .env
     # or
     yarn dev
    ```
-## API Documentation
 
+## API Documentation
 The API documentation is generated using Swagger. You can access it at:
 
 [http://localhost:3333/api-docs](http://localhost:3333/api-docs)
     
+Add de JWT returned in the authenticate endpoint in the top right corner of the page to authenticate the requests.
