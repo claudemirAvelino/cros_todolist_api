@@ -48,7 +48,7 @@ class UserController {
             })
             if (!user) {
                 response.status(404)
-                    .send('Resource not found.')
+                    .send('User not found.')
 
                 return
             }

@@ -1,5 +1,6 @@
 {
     "User": {
+        "type": "object",
         "properties": {
             "id": {
                 "type": "string",
@@ -20,6 +21,7 @@
         }
     },
     "UserCreate": {
+        "type": "object",
         "required": [
             "name",
             "email",
@@ -44,6 +46,7 @@
         }
     },
     "UserUpdate": {
+        "type": "object",
         "properties": {
             "name": {
                 "type": "string",

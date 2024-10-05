@@ -1,32 +1,48 @@
-import swaggerJSDoc, { SwaggerDefinition, Options } from 'swagger-jsdoc';
-import definitionsOfRoutes from './routes/doc';
+import swaggerJsDoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import { Express } from 'express';
+import fs from 'fs';
+import path from 'path';
 
-const swaggerDefinition = {
-    info: {
-        title: 'API Generic Service',
-        version: '1.0.0',
-    },
-    host: process.env.HOST || 'localhost:3000',
-    basePath: '/',
-    securityDefinitions: {
-        BearerAuth: {
-            type: 'apiKey',
-            name: 'Authorization',
-            in: 'header',
+const loadSchemas = (schemasDir: string) => {
+    const schemas: { [key: string]: any } = {};
+    const files = fs.readdirSync(schemasDir);
+
+    files.forEach(file => {
+        if (file.endsWith('.json')) {
+            const filePath = path.join(schemasDir, file);
+            const schemaContent = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+            Object.keys(schemaContent).forEach(key => {
+                schemas[key] = schemaContent[key];
+            });
+        }
+    });
+
+    return schemas;
+};
+
+const swaggerOptions  = {
+    definition: {
+        info: {
+            title: 'API Generic Service',
+            version: '1.0.0',
+        },
+        servers: [
+            {
+                url: 'http://localhost:3333',
+            },
+        ],
+        components: {
+            schemas: loadSchemas(path.join(__dirname, 'routes/schemas')), // Carrega todos os esquemas JSON
         },
     },
-} as SwaggerDefinition;
+    apis: ['./src/routes/*.ts'],
+};
 
-const options = {
-    swaggerDefinition,
-    apis: [
-        './dist/routes/index.js',
-        './dist/routes/user.routes.js',
-        './dist/routes/task.routes.js',
-    ],
-} as Options;
+const specs = swaggerJsDoc(swaggerOptions);
 
-const swaggerSpec = swaggerJSDoc(options) as SwaggerDefinition;
-swaggerSpec.definitions = { ...swaggerSpec.definitions, ...definitionsOfRoutes };
+const swaggerSetup = (app: Express) => {
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
+};
 
-export { swaggerSpec };
+export default swaggerSetup;

@@ -3,12 +3,10 @@ import {
     Column,
     CreateDateColumn,
     UpdateDateColumn,
-    PrimaryColumn,
     BeforeInsert,
     BeforeUpdate,
     OneToMany, PrimaryGeneratedColumn
 } from 'typeorm'
-import { v4 as uuid } from 'uuid';
 import { hashPassword } from '../utils/crypto'
 import {Task} from "./Task";
 

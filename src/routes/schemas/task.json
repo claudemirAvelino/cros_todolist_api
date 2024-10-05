@@ -1,5 +1,6 @@
 {
     "Task": {
+        "type": "object",
         "properties": {
             "id": {
                 "type": "string",
@@ -19,23 +20,24 @@
                 "description": "Task Status"
             },
             "user": {
-                "$ref": "#/definitions/User",
+                "$ref": "#/components/schemas/User",
                 "description": "User assigned to the task"
             },
             "parentTask": {
-                "$ref": "#/definitions/Task",
+                "$ref": "#/components/schemas/Task",
                 "description": "Parent task (if this task is a subtask)"
             },
             "subtasks": {
                 "type": "array",
                 "items": {
-                    "$ref": "#/definitions/Task"
+                    "$ref": "#/components/schemas/Task"
                 },
                 "description": "Subtasks of this task"
             }
         }
     },
     "TaskCreate": {
+        "type": "object",
         "required": [
             "title",
             "status",
@@ -70,6 +72,7 @@
         }
     },
     "TaskUpdate": {
+        "type": "object",
         "properties": {
             "title": {
                 "type": "string",

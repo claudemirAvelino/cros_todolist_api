@@ -1,16 +1,17 @@
 import { Request, Response } from 'express';
-import { getCustomRepository } from 'typeorm';
+import {getCustomRepository, Repository} from 'typeorm';
 import { TaskRepository } from '../repositories/TaskRepository';
 import { UserRepository } from '../repositories/UserRepository';
 import { TaskStatus } from '../enums/TaskStatus';
 import { logger } from '../utils/wintons';
 import {RequestModel, RequestTaskModel} from "../middleware/RequestModel";
+import {Task} from "../entities/Task";
 
 class TaskController {
     async create(request: RequestTaskModel, response: Response) {
         try {
             const { title, description, parentTaskId } = request.body;
-            const userId = request.auth.id; // Assuming user ID is available in request.auth
+            const userId = request.auth.id;
 
             const taskRepository = getCustomRepository(TaskRepository);
             const userRepository = getCustomRepository(UserRepository);
@@ -20,10 +21,11 @@ class TaskController {
                 return response.status(404).send('User not found');
             }
 
-            const task = taskRepository.create({
+            const task: Task = taskRepository.create({
                 title,
                 description,
                 user,
+                status: TaskStatus.PENDING,
                 parentTask: parentTaskId ? await taskRepository.findOne(parentTaskId) : null
             });
 
@@ -37,16 +39,42 @@ class TaskController {
 
     async list(request: RequestModel, response: Response) {
         try {
-            const userId = request.auth.id; // Assuming user ID is available in request.auth
+            const userId = request.auth.id;
             const taskRepository = getCustomRepository(TaskRepository);
 
-            const tasks = await taskRepository.find({ where: { user: userId }, relations: ['subtasks'] });
-            return response.json(tasks);
+            // @ts-ignore
+            async function loadTaskWithSubtasks(taskId: string, taskRepository: Repository<Task>): Promise<Task> {
+                const task = await taskRepository.findOne({
+                    where: { id: taskId },
+                    relations: ['subtasks']
+                });
+
+                if (task && task.subtasks.length > 0) {
+                    for (let i = 0; i < task.subtasks.length; i++) {
+                        task.subtasks[i] = await loadTaskWithSubtasks(task.subtasks[i].id, taskRepository);
+                    }
+                }
+
+                return task;
+            }
+
+            const tasks = await taskRepository
+                .createQueryBuilder('task')
+                .where('task.parentTask IS NULL')
+                .distinct(true)
+                .getMany();
+
+            const tasksWithSubtasks = await Promise.all(tasks.map(async (task) => {
+                return await loadTaskWithSubtasks(task.id, taskRepository);
+            }));
+
+            return response.json(tasksWithSubtasks);
         } catch (error) {
             logger.error('TaskController: list ERROR: ', error);
             return response.status(500).send('Server error');
         }
     }
+
 
     async update(request: RequestModel, response: Response) {
         try {
@@ -130,7 +158,7 @@ class TaskController {
     async filterByStatus(request: RequestModel, response: Response) {
         try {
             const { status } = request.query;
-            const userId = request.auth.id; // Assuming user ID is available in request.auth
+            const userId = request.auth.id;
             const taskRepository = getCustomRepository(TaskRepository);
 
             const tasks = await taskRepository.find({

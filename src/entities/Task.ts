@@ -33,7 +33,7 @@ class Task {
     @ManyToOne(() => Task, task => task.subtasks, { nullable: true })
     parentTask: Task;
 
-    @OneToMany(() => Task, task => task.parentTask)
+    @OneToMany(() => Task, task => task.parentTask, { cascade: true, onDelete: 'CASCADE'  })
     subtasks: Task[];
 
     @CreateDateColumn()
