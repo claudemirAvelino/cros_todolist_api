@@ -40,12 +40,12 @@ class UserController {
                     .send('Empty request body.')
                 return
             }
-            const userRepository = getCustomRepository(UserRepository)
-            const user = await userRepository.findOne({
-                where: {
-                    email
-                }
-            })
+            const userRepository = getCustomRepository(UserRepository);
+            const user = await userRepository.createQueryBuilder("user")
+                .addSelect("user.password")
+                .where("user.email = :email", { email })
+                .getOne();
+
             if (!user) {
                 response.status(404)
                     .send('User not found.')
@@ -59,7 +59,7 @@ class UserController {
                 const token = generateToken({
                     email
                 })
-                user.password = null;
+                delete user.password;
                 console.log('token', process.env.JWT_COOKIE)
                 response.cookie(
                     process.env.JWT_COOKIE,
@@ -67,6 +67,7 @@ class UserController {
                     httpOnly: true,
                     maxAge: parseInt(process.env.JWT_EXPIRES_IN, 10) * 1000
                 }
+
                 ).send({...user, token})
 
                 return
