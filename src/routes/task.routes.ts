@@ -1,3 +1,10 @@
+/**
+ * @swagger
+ * tags:
+ *   name: Tasks
+ *   description: Operações relacionadas às tarefas
+ */
+
 import { Router } from 'express';
 import { TaskController } from '../controllers/TaskController';
 import * as TaskValidators from '../utils/validator';
@@ -5,108 +12,37 @@ import { validate } from '../middleware/validationMiddleware';
 import { isLogged } from '../middleware/isLogged';
 
 const router = Router();
-
 const taskController = new TaskController();
 
 /**
  * @swagger
- * /api/tasks:
+ * /task:
  *   post:
- *     tags:
- *       - Tasks
- *     description: Create a new task
- *     security:
- *       - BearerAuth: []
+ *     summary: Cria uma nova tarefa
+ *     description: Cria uma nova tarefa com título, descrição, status e opcionalmente uma tarefa pai.
+ *     tags: [Tasks]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
- *             required:
- *               - title
- *               - status
- *               - userId
  *             properties:
- *               title:
+ *               titulo:
  *                 type: string
- *                 example: "Task Title"
- *                 description: "Task's title"
- *               description:
+ *               descricao:
  *                 type: string
- *                 example: "Task Description"
- *                 description: "Task's description"
- *               status:
- *                 type: string
- *                 example: "pending"
- *                 description: "Task's status"
- *               userId:
- *                 type: string
- *                 example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                 description: "User ID of the user assigned to the task"
  *               parentTaskId:
- *                 type: string
- *                 example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                 description: "ID of the parent task (if this task is a subtask)"
+ *                 type: number
+ *             required:
+ *               - titulo
  *     responses:
- *       201:
- *         description: Task created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                 title:
- *                   type: string
- *                   example: "Task Title"
- *                 description:
- *                   type: string
- *                   example: "Task Description"
- *                 status:
- *                   type: string
- *                   example: "pending"
- *                   description: "Task Status"
- *                 user:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                     name:
- *                       type: string
- *                       example: "John Doe"
- *                     email:
- *                       type: string
- *                       example: "john.doe@example.com"
- *                     password:
- *                       type: string
- *                       example: "password123"
- *                   description: "User assigned to the task"
- *                 parentTask:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                     title:
- *                       type: string
- *                       example: "Parent Task Title"
- *                   description: "Parent task (if this task is a subtask)"
- *                 subtasks:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: string
- *                         example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                       title:
- *                         type: string
- *                         example: "Subtask Title"
- *                   description: "Subtasks of this task"
+ *       '201':
+ *         description: Tarefa criada com sucesso
+ *       '400':
+ *         description: Erro nos dados fornecidos
+ *       '500':
+ *         description: Erro ao criar a tarefa
  */
 router.post(
     '/',
@@ -118,81 +54,25 @@ router.post(
 
 /**
  * @swagger
- * /api/tasks:
+ * /task:
  *   get:
- *     tags:
- *       - Tasks
- *     description: Get all tasks of User
+ *     summary: Obtém todas as tarefas do usuário
+ *     description: Retorna todas as tarefas do usuário logado, com opção de filtrar por status.
+ *     tags: [Tasks]
  *     security:
- *       - BearerAuth: []
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: status
  *         schema:
  *           type: string
  *           enum: [completed, pending]
- *         description: Filter tasks by status (completed or pending)
+ *         description: Filtra tarefas por status (completed ou pending)
  *     responses:
- *       200:
- *         description: Tasks found
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: string
- *                     example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                   title:
- *                     type: string
- *                     example: "Task Title"
- *                   description:
- *                     type: string
- *                     example: "Task Description"
- *                   status:
- *                     type: string
- *                     example: "pending"
- *                     description: "Task Status"
- *                   user:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: string
- *                         example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                       name:
- *                         type: string
- *                         example: "John Doe"
- *                       email:
- *                         type: string
- *                         example: "john.doe@example.com"
- *                       password:
- *                         type: string
- *                         example: "password123"
- *                     description: "User assigned to the task"
- *                   parentTask:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: string
- *                         example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                       title:
- *                         type: string
- *                         example: "Parent Task Title"
- *                     description: "Parent task (if this task is a subtask)"
- *                   subtasks:
- *                     type: array
- *                     items:
- *                       type: object
- *                       properties:
- *                         id:
- *                           type: string
- *                           example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                         title:
- *                           type: string
- *                           example: "Subtask Title"
- *                     description: "Subtasks of this task"
+ *       '200':
+ *         description: Tarefas encontradas
+ *       '404':
+ *         description: Nenhuma tarefa encontrada
  */
 router.get(
     '/',
@@ -203,13 +83,13 @@ router.get(
 
 /**
  * @swagger
- * /api/tasks/{id}:
+ * /task:/{id}:
  *   put:
- *     tags:
- *       - Tasks
- *     description: Update a task by ID
+ *     summary: Atualiza uma tarefa por ID
+ *     description: Atualiza uma tarefa existente com base no ID fornecido.
+ *     tags: [Tasks]
  *     security:
- *       - BearerAuth: []
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -226,83 +106,15 @@ router.get(
  *             properties:
  *               title:
  *                 type: string
- *                 example: "Task Title"
- *                 description: "Task's title"
  *               description:
  *                 type: string
- *                 example: "Task Description"
- *                 description: "Task's description"
- *               status:
- *                 type: string
- *                 example: "pending"
- *                 description: "Task's status"
- *               userId:
- *                 type: string
- *                 example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                 description: "User ID of the user assigned to the task"
  *               parentTaskId:
  *                 type: string
- *                 example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                 description: "ID of the parent task (if this task is a subtask)"
  *     responses:
- *       200:
- *         description: Task updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                 title:
- *                   type: string
- *                   example: "Task Title"
- *                 description:
- *                   type: string
- *                   example: "Task Description"
- *                 status:
- *                   type: string
- *                   example: "pending"
- *                   description: "Task Status"
- *                 user:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                     name:
- *                       type: string
- *                       example: "John Doe"
- *                     email:
- *                       type: string
- *                       example: "john.doe@example.com"
- *                     password:
- *                       type: string
- *                       example: "password123"
- *                   description: "User assigned to the task"
- *                 parentTask:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                       title:
- *                         type: string
- *                         example: "Parent Task Title"
- *                   description: "Parent task (if this task is a subtask)"
- *                 subtasks:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: string
- *                         example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                       title:
- *                         type: string
- *                         example: "Subtask Title"
- *                   description: "Subtasks of this task"
+ *       '200':
+ *         description: Tarefa atualizada com sucesso
+ *       '404':
+ *         description: Tarefa não encontrada
  */
 router.put(
     '/:id',
@@ -314,13 +126,13 @@ router.put(
 
 /**
  * @swagger
- * /api/tasks/{id}:
+ * /task:/{id}:
  *   delete:
- *     tags:
- *       - Tasks
- *     description: Delete a task by ID
+ *     summary: Deleta uma tarefa por ID
+ *     description: Remove uma tarefa existente com base no ID fornecido.
+ *     tags: [Tasks]
  *     security:
- *       - BearerAuth: []
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -329,10 +141,10 @@ router.put(
  *           type: string
  *           format: uuid
  *     responses:
- *       200:
- *         description: Task deleted successfully
- *       404:
- *         description: Task not found
+ *       '200':
+ *         description: Tarefa deletada com sucesso
+ *       '404':
+ *         description: Tarefa não encontrada
  */
 router.delete(
     '/:id',
@@ -344,13 +156,13 @@ router.delete(
 
 /**
  * @swagger
- * /api/tasks/{id}/complete:
+ * /task:/{id}/complete:
  *   patch:
- *     tags:
- *       - Tasks
- *     description: Mark a task as completed
+ *     summary: Marca uma tarefa como concluída
+ *     description: Atualiza o status de uma tarefa para concluída.
+ *     tags: [Tasks]
  *     security:
- *       - BearerAuth: []
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -359,66 +171,10 @@ router.delete(
  *           type: string
  *           format: uuid
  *     responses:
- *       200:
- *         description: Task marked as completed
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                 title:
- *                   type: string
- *                   example: "Task Title"
- *                 description:
- *                   type: string
- *                   example: "Task Description"
- *                 status:
- *                   type: string
- *                   example: "pending"
- *                   description: "Task Status"
- *                 user:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                     name:
- *                       type: string
- *                       example: "John Doe"
- *                     email:
- *                       type: string
- *                       example: "john.doe@example.com"
- *                     password:
- *                       type: string
- *                       example: "password123"
- *                   description: "User assigned to the task"
- *                 parentTask:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                       title:
- *                         type: string
- *                         example: "Parent Task Title"
- *                   description: "Parent task (if this task is a subtask)"
- *                 subtasks:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: string
- *                         example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                       title:
- *                         type: string
- *                         example: "Subtask Title"
- *                   description: "Subtasks of this task"
- *       404:
- *         description: Task not found
+ *       '200':
+ *         description: Tarefa marcada como concluída
+ *       '404':
+ *         description: Tarefa não encontrada
  */
 router.patch(
     '/:id/complete',
@@ -430,13 +186,13 @@ router.patch(
 
 /**
  * @swagger
- * /api/tasks/{id}/pending:
+ * /task:/{id}/pending:
  *   patch:
- *     tags:
- *       - Tasks
- *     description: Mark a task as pending
+ *     summary: Marca uma tarefa como pendente
+ *     description: Atualiza o status de uma tarefa para pendente.
+ *     tags: [Tasks]
  *     security:
- *       - BearerAuth: []
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -445,66 +201,10 @@ router.patch(
  *           type: string
  *           format: uuid
  *     responses:
- *       200:
- *         description: Task marked as pending
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                   example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                 title:
- *                   type: string
- *                   example: "Task Title"
- *                 description:
- *                   type: string
- *                   example: "Task Description"
- *                 status:
- *                   type: string
- *                   example: "pending"
- *                   description: "Task Status"
- *                 user:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                     name:
- *                       type: string
- *                       example: "John Doe"
- *                     email:
- *                       type: string
- *                       example: "john.doe@example.com"
- *                     password:
- *                       type: string
- *                       example: "password123"
- *                   description: "User assigned to the task"
- *                 parentTask:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                       example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                       title:
- *                         type: string
- *                         example: "Parent Task Title"
- *                   description: "Parent task (if this task is a subtask)"
- *                 subtasks:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: string
- *                         example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                       title:
- *                         type: string
- *                         example: "Subtask Title"
- *                   description: "Subtasks of this task"
- *       404:
- *         description: Task not found
+ *       '200':
+ *         description: Tarefa marcada como pendente
+ *       '404':
+ *         description: Tarefa não encontrada
  */
 router.patch(
     '/:id/pending',
@@ -516,13 +216,13 @@ router.patch(
 
 /**
  * @swagger
- * /api/tasks/status:
+ * /task:/status:
  *   get:
- *     tags:
- *       - Tasks
- *     description: Filter tasks by status
+ *     summary: Filtra tarefas por status
+ *     description: Retorna tarefas filtradas pelo status fornecido.
+ *     tags: [Tasks]
  *     security:
- *       - BearerAuth: []
+ *       - bearerAuth: []
  *     parameters:
  *       - in: query
  *         name: status
@@ -531,66 +231,10 @@ router.patch(
  *           type: string
  *           enum: [completed, pending]
  *     responses:
- *       200:
- *         description: Tasks filtered by status
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   id:
- *                     type: string
- *                     example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                   title:
- *                     type: string
- *                     example: "Task Title"
- *                   description:
- *                     type: string
- *                     example: "Task Description"
- *                   status:
- *                     type: string
- *                     example: "pending"
- *                     description: "Task Status"
- *                   user:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: string
- *                         example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                       name:
- *                         type: string
- *                         example: "John Doe"
- *                       email:
- *                         type: string
- *                         example: "john.doe@example.com"
- *                       password:
- *                         type: string
- *                         example: "password123"
- *                     description: "User assigned to the task"
- *                   parentTask:
- *                     type: object
- *                     properties:
- *                       id:
- *                         type: string
- *                         example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                         title:
- *                           type: string
- *                           example: "Parent Task Title"
- *                     description: "Parent task (if this task is a subtask)"
- *                   subtasks:
- *                     type: array
- *                     items:
- *                       type: object
- *                       properties:
- *                         id:
- *                           type: string
- *                           example: "0874db54-4d61-49c8-a843-4cad584655be"
- *                         title:
- *                           type: string
- *                           example: "Subtask Title"
- *                     description: "Subtasks of this task"
+ *       '200':
+ *         description: Tarefas filtradas por status
+ *       '404':
+ *         description: Nenhuma tarefa encontrada
  */
 router.get(
     '/status',
