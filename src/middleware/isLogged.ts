@@ -7,7 +7,7 @@ import { logger } from '../utils/wintons';
 
 const isLogged = async (req: RequestModel, res: Response, next) => {
   try {
-    let token = req?.cookies?.token || req.headers.bearer
+    let token = req?.cookies?.token || req.headers.authorization?.split(' ')[1] ||req.headers.bearer
 
     if (!token) {
       throw 'Token not provided';

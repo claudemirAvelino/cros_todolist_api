@@ -1,4 +1,4 @@
-import { Router, Response, Request } from 'express';
+import { Router } from 'express';
 import { UserController } from '../controllers/UserController';
 import { isLogged } from '../middleware/isLogged';
 import task from './task.routes';
@@ -13,6 +13,19 @@ const userController = new UserController();
  * tags:
  *   name: Users
  *   description: Operações relacionadas aos usuários
+ */
+
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *
+ * security:
+ *   - BearerAuth: []
  */
 
 /**
@@ -73,6 +86,14 @@ routes.post('/users', createUserValidator, validate, userController.create);
  *     responses:
  *       '200':
  *         description: Autenticação bem-sucedida
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                   description: Token JWT de autenticação
  *       '401':
  *         description: Credenciais inválidas
  *       '500':
@@ -80,6 +101,23 @@ routes.post('/users', createUserValidator, validate, userController.create);
  */
 routes.post('/authenticate', authenticateUserValidator, validate, userController.authenticate);
 
-routes.use('/task', isLogged, task);
+/**
+ * @swagger
+ * /task:
+ *   get:
+ *     summary: Retorna a lista de tarefas
+ *     description: Retorna todas as tarefas associadas ao usuário autenticado.
+ *     tags: [Tasks]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       '200':
+ *         description: Lista de tarefas retornada com sucesso
+ *       '401':
+ *         description: Autenticação necessária
+ *       '500':
+ *         description: Erro ao buscar tarefas
+ */
+routes.use('/task', task);
 
 export { routes };

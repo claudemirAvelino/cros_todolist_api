@@ -21,6 +21,8 @@ const taskController = new TaskController();
  *     summary: Cria uma nova tarefa
  *     description: Cria uma nova tarefa com título, descrição, status e opcionalmente uma tarefa pai.
  *     tags: [Tasks]
+ *     security:
+ *       - BearerAuth: []  # Adicionando segurança para esta rota
  *     requestBody:
  *       required: true
  *       content:
@@ -28,14 +30,14 @@ const taskController = new TaskController();
  *           schema:
  *             type: object
  *             properties:
- *               titulo:
+ *               title:
  *                 type: string
- *               descricao:
+ *               description:
  *                 type: string
  *               parentTaskId:
- *                 type: number
+ *                 type: string
  *             required:
- *               - titulo
+ *               - title
  *     responses:
  *       '201':
  *         description: Tarefa criada com sucesso
@@ -60,14 +62,7 @@ router.post(
  *     description: Retorna todas as tarefas do usuário logado, com opção de filtrar por status.
  *     tags: [Tasks]
  *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: status
- *         schema:
- *           type: string
- *           enum: [completed, pending]
- *         description: Filtra tarefas por status (completed ou pending)
+ *       - BearerAuth: []  # Adicionando segurança para esta rota
  *     responses:
  *       '200':
  *         description: Tarefas encontradas
@@ -83,20 +78,20 @@ router.get(
 
 /**
  * @swagger
- * /task:/{id}:
+ * /task/{id}:
  *   put:
  *     summary: Atualiza uma tarefa por ID
  *     description: Atualiza uma tarefa existente com base no ID fornecido.
  *     tags: [Tasks]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []  # Adicionando segurança para esta rota
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
- *           type: integer
- *           format: int64
+ *           type: string
+ *           format: uuid
  *     requestBody:
  *       required: true
  *       content:
@@ -126,13 +121,13 @@ router.put(
 
 /**
  * @swagger
- * /task:/{id}:
+ * /task/{id}:
  *   delete:
  *     summary: Deleta uma tarefa por ID
  *     description: Remove uma tarefa existente com base no ID fornecido.
  *     tags: [Tasks]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []  # Adicionando segurança para esta rota
  *     parameters:
  *       - in: path
  *         name: id
@@ -156,13 +151,13 @@ router.delete(
 
 /**
  * @swagger
- * /task:/{id}/complete:
+ * /task/{id}/complete:
  *   patch:
  *     summary: Marca uma tarefa como concluída
  *     description: Atualiza o status de uma tarefa para concluída.
  *     tags: [Tasks]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []  # Adicionando segurança para esta rota
  *     parameters:
  *       - in: path
  *         name: id
@@ -186,13 +181,13 @@ router.patch(
 
 /**
  * @swagger
- * /task:/{id}/pending:
+ * /task/{id}/pending:
  *   patch:
  *     summary: Marca uma tarefa como pendente
  *     description: Atualiza o status de uma tarefa para pendente.
  *     tags: [Tasks]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []  # Adicionando segurança para esta rota
  *     parameters:
  *       - in: path
  *         name: id
@@ -216,13 +211,13 @@ router.patch(
 
 /**
  * @swagger
- * /task:/status:
+ * /task/status:
  *   get:
  *     summary: Filtra tarefas por status
  *     description: Retorna tarefas filtradas pelo status fornecido.
  *     tags: [Tasks]
  *     security:
- *       - bearerAuth: []
+ *       - BearerAuth: []  # Adicionando segurança para esta rota
  *     parameters:
  *       - in: query
  *         name: status
