@@ -10,7 +10,7 @@ export const createTaskValidator = [
 export const updateTaskValidator = [
     param('id').isUUID().withMessage('Invalid task ID'),
     body('title').optional().notEmpty().withMessage('Title is required'),
-    body('description')
+    body('description').optional()
         .notEmpty()
         .withMessage('Description is required'),
     body('status')
@@ -26,4 +26,23 @@ export const getTaskByIdValidator = [
 
 export const deleteTaskValidator = [
     param('id').isUUID().withMessage('Invalid task ID'),
+];
+
+export const createUserValidator = [
+    body('name').notEmpty().withMessage('Name is required'),
+    body('email')
+        .isEmail()
+        .withMessage('Invalid email format')
+        .notEmpty()
+        .withMessage('Email is required'),
+    body('password').notEmpty().withMessage('Password is required')
+];
+
+export const authenticateUserValidator = [
+    body('email')
+        .isEmail()
+        .withMessage('Invalid email format')
+        .notEmpty()
+        .withMessage('Email is required'),
+    body('password').notEmpty().withMessage('Password is required')
 ];

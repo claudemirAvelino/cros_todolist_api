@@ -109,6 +109,11 @@ class TaskController {
                 return response.status(404).send('Task not found');
             }
 
+            const subtasks = await taskRepository.find({ where: { parentTask: task } });
+            if (subtasks.length > 0) {
+                await taskRepository.remove(subtasks);
+            }
+
             await taskRepository.remove(task);
             return response.status(204).send();
         } catch (error) {
@@ -162,8 +167,7 @@ class TaskController {
             const taskRepository = getCustomRepository(TaskRepository);
 
             const tasks = await taskRepository.find({
-                where: { user: userId, status },
-                relations: ['subtasks']
+                where: { user: userId, status }
             });
             return response.json(tasks);
         } catch (error) {

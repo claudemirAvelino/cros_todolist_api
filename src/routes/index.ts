@@ -2,6 +2,8 @@ import { Router, Response, Request } from 'express';
 import { UserController } from '../controllers/UserController';
 import { isLogged } from '../middleware/isLogged';
 import task from './task.routes';
+import { createUserValidator, authenticateUserValidator } from '../utils/validator';
+import { validate } from '../middleware/validationMiddleware';
 
 const routes = Router();
 const userController = new UserController();
@@ -45,7 +47,7 @@ const userController = new UserController();
  *       '500':
  *         description: Erro ao criar o usuário
  */
-routes.post('/users', userController.create);
+routes.post('/users', createUserValidator, validate, userController.create);
 
 /**
  * @swagger
@@ -76,7 +78,7 @@ routes.post('/users', userController.create);
  *       '500':
  *         description: Erro ao autenticar o usuário
  */
-routes.post('/authenticate', userController.authenticate);
+routes.post('/authenticate', authenticateUserValidator, validate, userController.authenticate);
 
 routes.use('/task', isLogged, task);
 
